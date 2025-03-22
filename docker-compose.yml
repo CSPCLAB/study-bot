@@ -1,0 +1,12 @@
+version: '3'
+
+
+services:
+  discord-bot:
+    build: .
+    env_file:
+      - .env
+    container_name: study-bot
+    restart: always
+    volumes:
+      - ./study.db:/app/study.db
