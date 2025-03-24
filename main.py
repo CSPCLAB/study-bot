@@ -193,11 +193,25 @@ async def on_voice_state_update(member, before, after):
         # 기준 시간 설정
         try:
             start_hour, start_minute = map(int, study_info["time"].split(":"))
-            study_start = datetime.datetime.combine(now.date(), datetime.time(start_hour, start_minute))
+            study_start = timezone('Asia/Seoul').localize(
+                datetime.datetime.combine(now.date(), datetime.time(start_hour, start_minute))
+            )
         except:
             continue
 
         delta = (now - study_start).total_seconds()
+
+        # 다른 스터디원에게 DM으로 출석 여부 알림
+        study_members = get_study_members(study_name)
+
+        for study_member in study_members:
+            if study_member == member.name:
+                continue
+
+            study_member_obj = discord.utils.get(member.guild.members, name=study_member)
+            if study_member_obj:
+                await study_member_obj.send(f"📢 {member.name}이 왔는데 넌 모함?")
+        
 
         if delta < -3600:  # 1시간 전부터 출석
             status = "출석"
@@ -216,6 +230,7 @@ async def on_voice_state_update(member, before, after):
             if text_channel:
                 await text_channel.send(f"✅ {member.name}님이 **{study_name}** {status}했습니다! ({now_time})")
 
+        
 
 @bot.event
 async def on_ready():
