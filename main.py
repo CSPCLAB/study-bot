@@ -3,6 +3,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 import os
 import datetime
+from pytz import timezone
 
 from db import (
     add_study_members,
@@ -174,7 +175,7 @@ async def on_voice_state_update(member, before, after):
     if after.channel is None:
         return
 
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(timezone('Asia/Seoul'))
     today = now.strftime('%Y-%m-%d')
     now_time = now.strftime('%H:%M')
     weekday_today = now.weekday()
