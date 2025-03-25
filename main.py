@@ -179,7 +179,7 @@ async def on_voice_state_update(member, before, after):
     today = now.strftime('%Y-%m-%d')
     now_time = now.strftime('%H:%M')
     weekday_today = now.weekday()
-
+    print(now)
     study_names = get_study_by_voice_channel_id(after.channel.id)
 
     for study_name in study_names:
@@ -193,7 +193,10 @@ async def on_voice_state_update(member, before, after):
         # 기준 시간 설정
         try:
             start_hour, start_minute = map(int, study_info["time"].split(":"))
-            study_start = datetime.datetime.combine(now.date(), datetime.time(start_hour, start_minute))
+            seoul_tz = timezone('Asia/Seoul')
+            study_start_naive = datetime.datetime.combine(now.date(), datetime.time(start_hour, start_minute))
+            study_start = seoul_tz.localize(study_start_naive)  # 이 부분이 핵심!
+
         except:
             continue
 
