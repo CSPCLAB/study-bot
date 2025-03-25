@@ -179,7 +179,6 @@ async def on_voice_state_update(member, before, after):
     today = now.strftime('%Y-%m-%d')
     now_time = now.strftime('%H:%M')
     weekday_today = now.weekday()
-    print(now)
     study_names = get_study_by_voice_channel_id(after.channel.id)
 
     for study_name in study_names:
@@ -193,16 +192,10 @@ async def on_voice_state_update(member, before, after):
         # 기준 시간 설정
         try:
             start_hour, start_minute = map(int, study_info["time"].split(":"))
-<<<<<<< HEAD
             seoul_tz = timezone('Asia/Seoul')
             study_start_naive = datetime.datetime.combine(now.date(), datetime.time(start_hour, start_minute))
             study_start = seoul_tz.localize(study_start_naive)  # 이 부분이 핵심!
 
-=======
-            study_start = timezone('Asia/Seoul').localize(
-                datetime.datetime.combine(now.date(), datetime.time(start_hour, start_minute))
-            )
->>>>>>> 4fb9d65f7af2dfa96afae78e3415b89ff47363a5
         except:
             continue
 
@@ -212,7 +205,7 @@ async def on_voice_state_update(member, before, after):
         study_members = get_study_members(study_name)
 
         for study_member in study_members:
-            if study_member == member.name:
+            if study_member == member.name or has_already_checked_in(study_name, study_member, today):
                 continue
 
             study_member_obj = discord.utils.get(member.guild.members, name=study_member)
